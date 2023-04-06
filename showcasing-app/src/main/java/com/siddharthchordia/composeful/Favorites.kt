@@ -12,7 +12,9 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -24,26 +26,33 @@ import composables.ComponentType
 import kotlinx.coroutines.launch
 
 @Composable
-fun Home(navController: NavController, showcaseViewModel: ShowcaseViewModel) {
-    val filteredComponents by showcaseViewModel.filteredComponents.collectAsState(emptyList())
+fun Favorites(showcaseViewModel: ShowcaseViewModel, navController: NavController) {
+    val favoriteUpdates by showcaseViewModel.favoriteUpdates.collectAsState(null)
+    val components = remember { showcaseViewModel.snapshotComponents }
     val coroutineScope = rememberCoroutineScope()
-    val favoriteUpdate by showcaseViewModel.favoriteUpdates.collectAsState(null)
+
+    val favoriteComponents = components.filter { it.isFavorite }
+
+    val configuration = LocalConfiguration.current
+    val screenWidthDp = with(LocalDensity.current) {
+        (configuration.screenWidthDp * density).toInt().dp
+    }
 
     Surface(color = MaterialTheme.colors.background) {
-        val configuration = LocalConfiguration.current
-        val screenWidthDp = with(LocalDensity.current) {
-            (configuration.screenWidthDp * density).toInt().dp
-        }
         LazyColumn(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier.fillMaxSize()
         ) {
-            items(filteredComponents) { component ->
+            items(favoriteComponents) { component ->
                 val componentSize = when (component.componentType) {
                     ComponentType.LONG -> Modifier.size(width = screenWidthDp * 0.5f, height = screenWidthDp * 0.5f)
                     ComponentType.WIDE -> Modifier.fillMaxWidth()
                     ComponentType.LARGE -> Modifier.size(width = screenWidthDp, height = screenWidthDp * 0.8f)
+                }
+
+                val isFavorite = remember(component.id, favoriteUpdates) {
+                    derivedStateOf { component.isFavorite }
                 }
 
                 ComponentSnapshot(
@@ -51,7 +60,7 @@ fun Home(navController: NavController, showcaseViewModel: ShowcaseViewModel) {
                     description = component.description,
                     inactiveState = component.inactiveState,
                     activeState = component.activeState,
-                    isFavorite = if (favoriteUpdate != null && component.componentName == favoriteUpdate!!.componentName) component.isFavorite else component.isFavorite,
+                    isFavorite = isFavorite.value,
                     onToggleFavorite = {
                         coroutineScope.launch {
                             if (component.isFavorite) {

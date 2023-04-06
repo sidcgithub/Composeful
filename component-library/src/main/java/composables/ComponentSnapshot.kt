@@ -2,10 +2,12 @@ package composables
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment.Companion.End
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
@@ -15,19 +17,37 @@ fun ComponentSnapshot(
     description: String,
     inactiveState: @Composable () -> Unit,
     activeState: @Composable () -> Unit,
-    modifier: Modifier = Modifier
+    isFavorite: Boolean,
+    onToggleFavorite: () -> Unit,
+    modifier: Modifier = Modifier,
+    componentType: ComponentType = ComponentType.WIDE,
+    componentSize: Modifier
 ) {
     Card(
         modifier = modifier
-            .padding(8.dp)
-            .fillMaxWidth(),
+            .then(componentSize)
+            .padding(8.dp),
         shape = RoundedCornerShape(12.dp),
         backgroundColor = MaterialTheme.colors.surface,
         elevation = 4.dp
     ) {
+        val componentWidth = when (componentType) {
+            ComponentType.LONG -> 0.4f
+            ComponentType.WIDE -> 1f
+            ComponentType.LARGE -> 0.6f
+        }
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
+            IconButton(
+                onClick = onToggleFavorite,
+                modifier = Modifier.align(alignment = End)
+            ) {
+                Icon(
+                    imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                    contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites"
+                )
+            }
             Text(
                 text = componentName,
                 style = MaterialTheme.typography.h6,
@@ -43,14 +63,14 @@ fun ComponentSnapshot(
             Row {
                 Box(
                     modifier = Modifier
-                        .weight(1f)
+                        .weight(componentWidth)
                         .padding(end = 8.dp)
                 ) {
                     inactiveState()
                 }
                 Box(
                     modifier = Modifier
-                        .weight(1f)
+                        .weight(componentWidth)
                         .padding(start = 8.dp)
                 ) {
                     activeState()
@@ -58,11 +78,38 @@ fun ComponentSnapshot(
             }
         }
     }
+
 }
 
-data class ComponentInfo(
+enum class ComponentType {
+    LONG, WIDE, LARGE
+}
+
+
+data class ComponentSnapshotInfo(
+    val id: Int,
     val componentName: String,
     val description: String,
     val inactiveState: @Composable () -> Unit,
-    val activeState: @Composable () -> Unit
+    val activeState: @Composable () -> Unit,
+    var isFavorite: Boolean = false,
+    val componentType: ComponentType,
 )
+
+data class ComponentDetailsInfo(
+    val id: Int,
+    val componentName: String,
+    val componentType: ComponentType,
+    val configurations: List<ComponentConfiguration>
+)
+
+
+sealed class ComponentConfiguration {
+    data class ExpandableCardConfiguration(
+        val title: String,
+        val content: String,
+        var expanded: Boolean
+    ) : ComponentConfiguration()
+
+    // Add more subclasses for other components as needed
+}

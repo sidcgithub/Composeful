@@ -40,13 +40,10 @@ fun ComponentDetails() {
                         ExpandableCard(
                             title = { Text(itemTitle, style = MaterialTheme.typography.h6) },
                             content = { Text(itemContent) },
-                            expanded = expandedState.value,
-                            onClick = { expandedState.value = !expandedState.value }
                         )
                     }
                 }
             }
         }
     }
-
 }
