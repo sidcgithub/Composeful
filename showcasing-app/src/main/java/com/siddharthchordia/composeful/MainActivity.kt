@@ -100,14 +100,25 @@ class MainActivity : ComponentActivity() {
                         startDestination = MainScreen.Home.route,
                         modifier = Modifier.padding(it)
                     ) {
-                        composable(Screen.Home.route) {
-                            Home(
-                                navController = navController,
-                                showcaseViewModel = showcaseViewModel
-                            ) // Home screen content here (LazyColumn with ComponentSnapshot items)
-                        }
+//                        composable(Screen.Home.route) {
+//                            Home(
+//                                navController = navController,
+//                                showcaseViewModel = showcaseViewModel
+//                            ) // Home screen content here (LazyColumn with ComponentSnapshot items)
+//                        }
                         composable(Screen.ComponentDetails.route) { backStackEntry ->
-                            ComponentDetails() // ComponentDetails screen content here
+                            val componentName = backStackEntry.arguments?.getString("componentName")
+                            val componentDetailsInfo = remember {
+                                mutableStateOf( showcaseViewModel.getComponentDetailsInfo
+                                (componentName))}
+
+                            componentDetailsInfo.value?.let {
+                                ListComponentDetails(
+                                    componentName = componentName,
+                                    componentDetailsInfo = it,
+                                )
+                            }
+
                         }
                         composable(MainScreen.Home.route) {
                             Home(
@@ -125,30 +136,9 @@ class MainActivity : ComponentActivity() {
                         composable(MainScreen.Settings.route) {
                             // Settings screen content here
                         }
-
-                        composable("componentDetails/{componentName}") { backStackEntry ->
-                            val componentName = backStackEntry.arguments?.getString("componentName")
-                            val componentDetailsInfo = showcaseViewModel.getComponentDetailsInfo(componentName)
-
-                            componentDetailsInfo?.let { details ->
-                                ListComponentDetails(
-                                    componentName = componentName,
-                                    component = { config ->
-                                        when (config) {
-                                            is ComponentConfiguration.ExpandableCardConfiguration -> {
-                                                ExpandableCard(
-                                                    title = { Text(config.title) },
-                                                    content = { Text(config.content) },
-                                                    initialExpanded = config.expanded
-                                                )
-                                            }
-                                            // Add more cases for other components as needed
-                                        }
-                                    },
-                                    configurations = details.configurations
-                                )
-                            }
-                        }
+//
+//                        composable("componentDetails/{componentName}") { backStackEntry ->
+//                        }
                     }
                 }
             }
@@ -167,7 +157,7 @@ sealed class MainScreen(val route: String, val label: String, val icon: ImageVec
 }
 
 sealed class Screen(val route: String) {
-    object Home : Screen("home")
+//    object Home : Screen("home")
     object ComponentDetails : Screen("componentDetails/{componentName}") {
         fun createRoute(componentName: String) = "componentDetails/$componentName"
     }

@@ -110,6 +110,8 @@ sealed class ComponentConfiguration {
         val content: String,
         var expanded: Boolean
     ) : ComponentConfiguration()
+    object SearchConfiguration : ComponentConfiguration()
+
 
     // Add more subclasses for other components as needed
 }

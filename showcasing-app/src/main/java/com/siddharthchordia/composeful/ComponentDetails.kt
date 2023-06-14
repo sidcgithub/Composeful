@@ -38,8 +38,8 @@ fun ComponentDetails() {
                     items.forEachIndexed { index, (itemTitle, itemContent) ->
                         val expandedState = remember { mutableStateOf(false) }
                         ExpandableCard(
-                            title = { Text(itemTitle, style = MaterialTheme.typography.h6) },
-                            content = { Text(itemContent) },
+                            title = itemTitle,
+                            content = itemContent,
                         )
                     }
                 }

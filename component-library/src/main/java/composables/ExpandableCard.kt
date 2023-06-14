@@ -14,16 +14,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.animateContentSize
+import androidx.compose.material.Text
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 
 @Composable
 fun ExpandableCard(
-    title: @Composable () -> Unit,
-    content: @Composable () -> Unit,
-    initialExpanded: Boolean = false,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    title: String,
+    content: String,
+    active: Boolean = true,
+    initialExpanded: Boolean = false
 ) {
     var expanded by remember { mutableStateOf(initialExpanded) }
 
@@ -34,7 +36,7 @@ fun ExpandableCard(
 
     Card(
         modifier = modifier
-            .clickable(onClick = { expanded = !expanded })
+            .clickable(onClick = { if(active) { expanded = !expanded }})
             .padding(vertical = 8.dp, horizontal = 16.dp)
             .fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
@@ -48,12 +50,12 @@ fun ExpandableCard(
                     animationSpec = tween(durationMillis = 500)
                 )
         ) {
-            title()
+            Text(title, style = MaterialTheme.typography.h6)
             Spacer(modifier = Modifier.height(8.dp))
             if (expanded) {
                 Divider()
                 Spacer(modifier = Modifier.height(8.dp))
-                content()
+                Text(content)
             }
         }
     }

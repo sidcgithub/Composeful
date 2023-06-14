@@ -52,6 +52,7 @@ dependencies {
     implementation "androidx.compose.runtime:runtime:$compose_version"
     implementation "androidx.compose.runtime:runtime-livedata:$compose_version"
     implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.8.0'
+    implementation 'androidx.lifecycle:lifecycle-runtime-compose:2.6.1'
     implementation "androidx.compose.animation:animation:1.4.0"
 
 

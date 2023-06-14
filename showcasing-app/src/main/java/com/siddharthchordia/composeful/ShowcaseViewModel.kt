@@ -56,39 +56,25 @@ class ShowcaseViewModel : ViewModel() {
         favoriteUpdates.emit(component.copy())
     }
 
-    fun getFilteredComponents(searchQuery: String): List<ComponentSnapshotInfo> {
-        return if (searchQuery.isBlank()) {
-            snapshotComponents
-        } else {
-            snapshotComponents.filter { component ->
-                component.componentName.contains(searchQuery, ignoreCase = true)
-            }
-        }
-    }
-
-    private fun updateComponentInList(component: ComponentSnapshotInfo): ComponentSnapshotInfo {
-        val index = snapshotComponents.indexOfFirst { it.id == component.id }
-        return if (index != -1) {
-            snapshotComponents[index] = component.copy()
-            return snapshotComponents[index]
-        } else component.copy()
-    }
 
     val snapshotComponents = mutableListOf(
         ComponentSnapshotInfo(
             id = 0,
-            componentName = "Expandable Card",
+            componentName = "Expandable",
             description = "A card that expands and collapses on click.",
             inactiveState = {
                 ExpandableCard(
-                    title = { Text("Collapsed Card") },
-                    content = { Text("This is the card content.") },
+                    title = "Collapsed Card",
+                    content = "This is the card content.",
+                    active = false
                 )
             },
             activeState = {
                 ExpandableCard(
-                    title = { Text("Expanded Card") },
-                    content = { Text("This is the card content.") },
+                    title = "Expandable",
+                    content = "This is the card content.",
+                    initialExpanded = true,
+                    active = false
                 )
             },
             componentType = ComponentType.WIDE
@@ -114,7 +100,7 @@ class ShowcaseViewModel : ViewModel() {
 
     private val components = mutableListOf(
         ComponentDetailsInfo(
-            componentName = "Expandable Card",
+            componentName = "Expandable",
             componentType = ComponentType.WIDE,
             id = 0,
 
@@ -131,6 +117,15 @@ class ShowcaseViewModel : ViewModel() {
                 )
             )
         ),
+        ComponentDetailsInfo(
+            componentName = "Search",
+            componentType = ComponentType.WIDE,
+            id = 0,
+
+            configurations = listOf(
+                ComponentConfiguration.SearchConfiguration
+            )
+        )
         // Add more components with their configurations here
     )
     fun getComponentDetailsInfo(componentName: String?): ComponentDetailsInfo? {
